@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Silent Run C++ (input/output redirection)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "g++ \"${file}\" -o \"${fileDirname}/a.exe\" && \"${fileDirname}/a.exe\" < \"${workspaceFolder}/input.txt\" > \"${workspaceFolder}/output.txt\"",
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run C++ with IO redirection",
+      "type": "shell",
+      "command": "g++",
+      "args": [
+        "${file}",
+        "-o",
+        "${fileDirname}\\a.exe"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Execute with input/output redirection",
+      "type": "shell",
+      "command": "${fileDirname}\\a.exe < ${workspaceFolder}/input.txt > ${workspaceFolder}/output.txt",
+      "dependsOn": "Run C++ with IO redirection",
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}
