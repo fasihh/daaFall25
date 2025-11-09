@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Closest Pair Finding Algorithm</title>
+
+  <style>
+    #cases {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+
+<body class="page">
+  <header>
+    <h1>Closest Pair Finding Algorithm</h1>
+    <a href="home.html">Home</a>
+  </header>
+
+  <div class="card">
+    <p>
+      Load a text file with the first line containing the number of test cases </br>
+      Every test case should have <code>n</code> in the first line as the number of points followed by <code>n</code> lines with two integers separated by space representing the coordinates of each point.
+    </p>
+    <input type="file" id="fileInput" value="test.txt" />
+    <a id="loadFile" class="btn">Load</a>
+  </div>
+
+  <div id="cases" class="menu"></div>
+
+  <script type="module" src="../scripts/closest-pair.js"></script>
+  <script type="module" src="../scripts/load-file.js"></script>
+  <script type="module">
+    document.getElementById('loadFile').addEventListener('click', () => {
+      window.loadFile((container, lines, testCases) => {
+        let k = 1;
+        for (let i = 1; i <= testCases; ++i) {
+          const m = parseInt(lines[k]);
+          const points = [];
+          for (let j = 0; j < m; ++j) {
+            const [x, y] = lines[k + j + 1].split(/\s+/).map(Number);
+            points.push({ x, y });
+          }
+          window.visualizeTestCase(container, points, i - 1);
+          k += m + 1;
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: daa-electron-builder:latest
+    volumes:
+      - ./:/project:cached
+      - ./dist:/project/dist
+    working_dir: /project
+    environment:
+      - NODE_ENV=production
+    # Default command runs the electron-builder dist step. You can override (see examples below).
+    command: ["bash", "-lc", "npx electron-builder --win --x64 --publish never"]
+    # Keep container short-lived (remove after run when used with `docker compose run --rm builder`)
+    restart: "no"

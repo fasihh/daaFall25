@@ -1,0 +1,24 @@
+{
+  "name": "daa-project",
+  "version": "1.0.0",
+  "description": "DAA Project Part 2",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "keywords": [
+    "algorithms",
+    "electron",
+    "divncon"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@electron-forge/cli": "^7.10.2",
+    "electron": "^39.1.1"
+  },
+  "dependencies": {}
+}
