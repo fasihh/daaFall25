@@ -143,9 +143,11 @@ function makeAnimator(draw, traceBox, mapping, findMappedById) {
   const currentRegion = () => regionStack.length ? regionStack[regionStack.length - 1] : null;
   return {
     async animate(traceArr, speedMs) {
-      if (controller) { controller.abort(); }
+      if (controller)
+        controller.abort();
       controller = new AbortController();
       const { signal } = controller;
+
       let bestSoFar = null; // keep track of best pair so far
       for (const ev of traceArr) {
         if (signal.aborted)
@@ -158,54 +160,67 @@ function makeAnimator(draw, traceBox, mapping, findMappedById) {
         // enter case when we enter a recursive call
         if (ev.type === 'enter') {
           line.textContent = `${'  '.repeat(ev.depth)}enter n=${ev.px.length}`;
-          const subMapped = ev.px.map(p => findMappedById(p.id));
-          if (subMapped.length) {
-            const xs = subMapped.map(p => p.x);
-            const minMX = Math.min(...xs); const maxMX = Math.max(...xs);
+          const selectedMapped = ev.px.map(p => findMappedById(p.id)); // mapped points in this call
+          if (selectedMapped.length) {
+            const xs = selectedMapped.map(p => p.x);
+            const minMX = Math.min(...xs);
+            const maxMX = Math.max(...xs);
             const left = Math.max(mapping.pad, minMX - 8);
             const right = Math.min(mapping.cvsWidth - mapping.pad, maxMX + 8);
-            draw({ subdomain: { left, right, points: subMapped } });
-          } else { draw({}); }
-
+            // draw the entry region
+            draw({ subdomain: { left, right, points: selectedMapped } });
+          } else {
+            draw({}); // draw empty region
+          }
           // compare case when we compare two points. we draw the line between them
         } else if (ev.type === 'compare') {
-          const a = findMappedById(ev.a.id), b = findMappedById(ev.b.id);
+          const a = findMappedById(ev.a.id), b = findMappedById(ev.b.id); // mapped points being compared
           line.textContent = `${'  '.repeat(ev.depth)}compare ${ev.a.id} - ${ev.b.id}`;
-          draw({ compare: { a, b }, region: currentRegion() });
+          draw({ compare: { a, b }, region: currentRegion() }); // draw comparison line in current region
 
           // best case when we found a new best pair we draw the red line between them
         } else if (ev.type === 'best') {
-          // ev.best.pair is [idA, idB]; keep bestSoFar in original units and ids
           bestSoFar = ev.best;
           line.textContent = `${'  '.repeat(ev.depth)}best updated d=${ev.best.d.toFixed(2)}`;
-          const mappedPair = ev.best.pair ? mapping.getMappedPair(ev.best.pair) : null;
-          draw({ best: mappedPair, region: currentRegion() });
+          const mappedPair = ev.best.pair ? mapping.getMappedPair(ev.best.pair) : null; // mapped best pair
+          draw({ best: mappedPair, region: currentRegion() }); // draw best line in current region
 
           // merge start case when we start merging two halves
         } else if (ev.type === 'merge-start') {
           const midxOrig = ev.midx; // middle x in original coords
 
-          // middle x in mapped coords
+          // middle x in mapped coords (affine transform back)
           const midx = mapping.pad + (midxOrig - mapping.minX) * mapping.scale + (mapping.w - mapping.spanX * mapping.scale) / 2;
 
-          // draw the merging region (convert algorithm distance to pixels)
+          // draw the merging region (convert points distance to pixels)
           const dMapped = ev.best && typeof ev.best.d === 'number' ? mapping.distanceToPixels(ev.best.d) : (bestSoFar && mapping.distanceToPixels(bestSoFar.d)) || 0;
           const left = Math.max(mapping.pad, midx - dMapped);
           const right = Math.min(mapping.cvsWidth - mapping.pad, midx + dMapped);
           line.textContent = `${'  '.repeat(ev.depth)}merge start (midx=${midxOrig})`;
           regionStack.push({ left, right }); // push current region to stack to keep track of regions for drawing
-          draw({ midx, region: currentRegion(), best: bestSoFar ? mapping.getMappedPair(bestSoFar.pair) : null });
+          draw({
+            midx,
+            region: currentRegion(),
+            best: bestSoFar ? mapping.getMappedPair(bestSoFar.pair) : null
+          });
 
           // strip case when we process the strip area in the merge case
         } else if (ev.type === 'strip') {
           const stripMapped = ev.strip.map(s => findMappedById(s.id));
           line.textContent = `${'  '.repeat(ev.depth)}strip size=${ev.strip.length}`;
-          draw({ strip: stripMapped, best: bestSoFar ? mapping.getMappedPair(bestSoFar.pair) : null, region: currentRegion() });
+          draw({
+            strip: stripMapped,
+            best: bestSoFar ? mapping.getMappedPair(bestSoFar.pair) : null,
+            region: currentRegion()
+          });
 
           // merge end case when we finish merging two halves
         } else if (ev.type === 'merge-end') {
           line.textContent = `${'  '.repeat(ev.depth)}merge end d=${ev.best.d.toFixed(2)}`;
-          draw({ best: ev.best.pair ? mapping.getMappedPair(ev.best.pair) : null, region: currentRegion() });
+          draw({
+            best: ev.best.pair ? mapping.getMappedPair(ev.best.pair) : null,
+            region: currentRegion()
+          });
           regionStack.pop(); // pop the region
 
           // exit case when we exit a recursive call
