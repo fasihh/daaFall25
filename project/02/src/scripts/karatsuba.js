@@ -164,7 +164,7 @@ function visualizeTestCase(parent, aStr, bStr, index) {
       animateTracePromise = animateTrace(
         traceBox,
         trace,
-        { speed: (1 - Number(speedInput.value)) * 1000 },
+        { speed: Math.max(10, (1 - Number(speedInput.value)) * 1000) },
         signal
       );
       await animateTracePromise;
