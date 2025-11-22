@@ -100,7 +100,6 @@ async function animateTrace(container, trace, options = {}, signal) {
     el.style.paddingLeft = `${step.depth * 1}rem`;
     el.textContent = step.text;
     container.appendChild(el);
-    el.scrollIntoView({ behavior: 'smooth' });
     await delay(speed);
   }
 }
@@ -137,6 +136,14 @@ function visualizeTestCase(parent, aStr, bStr, index) {
   speedLabel.style.marginLeft = '10px';
   speedLabel.innerHTML = `<small>speed</small> <input type="range" min="0" max="1" value="0.5" step="0.01" class="speed-range">`;
   controls.appendChild(speedLabel);
+
+  const exportBtn = document.createElement('button');
+  exportBtn.className = 'btn';
+  exportBtn.textContent = 'Export';
+  exportBtn.style.marginLeft = '10px';
+  exportBtn.disabled = true;
+  controls.appendChild(exportBtn);
+
   card.appendChild(controls);
 
   const traceBox = document.createElement('div');
@@ -161,13 +168,16 @@ function visualizeTestCase(parent, aStr, bStr, index) {
     traceBox.textContent = '';
 
     try {
+      card.style.backgroundColor = '';
       animateTracePromise = animateTrace(
         traceBox,
         trace,
-        { speed: Math.max(10, (1 - Number(speedInput.value)) * 1000) },
+        { speed: Math.max(1, (1 - Number(speedInput.value)) * 1000) },
         signal
       );
       await animateTracePromise;
+      exportBtn.disabled = false;
+      card.style.backgroundColor = 'rgba(0, 255, 0, 0.05)';
     } catch (e) {
       if (e && e.message === 'Animation stopped')
         traceBox.textContent = '';
@@ -188,6 +198,17 @@ function visualizeTestCase(parent, aStr, bStr, index) {
     runBtn.disabled = false;
     speedInput.disabled = false;
     stopBtn.disabled = true;
+  });
+
+  exportBtn.addEventListener('click', () => {
+    const traceText = trace.map(step => step.text).join('\n');
+    const blob = new Blob([traceText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `karatsuba_${aStr}_x_${bStr}_trace.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
   });
 }
 

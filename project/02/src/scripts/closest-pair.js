@@ -277,6 +277,14 @@ window.visualizeTestCase = function visualizeTestCase(parent, points, testCaseIn
   speedLabel.innerHTML = `<small>speed</small> <input type="range" min="0" max="1" value="0.5" step="0.01" class="speed-range">`;
 
   controls.appendChild(speedLabel);
+
+  const exportBtn = document.createElement('button');
+  exportBtn.className = 'btn';
+  exportBtn.textContent = 'Export';
+  exportBtn.style.marginLeft = '8px';
+  exportBtn.disabled = true;
+  controls.appendChild(exportBtn);
+
   card.appendChild(controls);
 
   const canvasWrap = document.createElement('div');
@@ -325,21 +333,52 @@ window.visualizeTestCase = function visualizeTestCase(parent, points, testCaseIn
     const sliderVal = speedElem ? Number(speedElem.value) : 0.5;
     const speed = Math.max(10, (1 - sliderVal) * 1000);
     try {
+      exportBtn.disabled = true;
+      card.style.backgroundColor = '';
       await animator.animate(trace, speed);
       info.textContent = `Done. best d≈${best.d.toFixed(2)}`;
+      exportBtn.disabled = false;
+      card.style.backgroundColor = 'rgba(0, 255, 0, 0.05)';
     } catch (e) {
       info.textContent = 'Stopped.';
     } finally {
-      playBtn.disabled = false; stopBtn.disabled = true; clearBtn.disabled = false;
+      playBtn.disabled = false;
+      stopBtn.disabled = true;
+      clearBtn.disabled = false;
     }
   });
 
   stopBtn.addEventListener('click', () => {
     animator.stop();
+    exportBtn.disabled = true;
   });
 
   clearBtn.addEventListener('click', () => {
     traceBox.innerHTML = '';
+    exportBtn.disabled = true;
+    card.style.backgroundColor = '';
+  });
+
+  exportBtn.addEventListener('click', () => {
+    cvs.toBlob((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `closest_pair_test_${testCaseIndex + 1}_visualization.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    const traceLines = Array.from(traceBox.children).map(el => el.textContent).join('\n');
+    if (traceLines) {
+      const blob = new Blob([traceLines], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `closest_pair_test_${testCaseIndex + 1}_trace.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
   });
 
   draw();
