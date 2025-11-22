@@ -1,0 +1,92 @@
+enter n=20
+  enter n=10
+    enter n=5
+      enter n=2
+      compare 0 - 1
+      best updated d=3.16
+      exit d=3.16
+      enter n=3
+      compare 2 - 3
+      best updated d=11.05
+      compare 2 - 4
+      best updated d=5.39
+      compare 3 - 4
+      exit d=5.39
+    merge start (midx=2)
+    strip size=6
+    compare 0 - 1
+    compare 1 - 4
+    compare 2 - 5
+    merge end d=3.16
+    exit d=3.16
+    enter n=5
+      enter n=2
+      compare 5 - 6
+      best updated d=6.08
+      exit d=6.08
+      enter n=3
+      compare 7 - 8
+      best updated d=18.03
+      compare 7 - 9
+      best updated d=3.61
+      compare 8 - 9
+      exit d=3.61
+    merge start (midx=7)
+    strip size=5
+    compare 9 - 7
+    compare 10 - 6
+    merge end d=3.61
+    exit d=3.61
+  merge start (midx=5)
+  strip size=7
+  compare 4 - 7
+  compare 7 - 2
+  compare 2 - 5
+  compare 6 - 3
+  merge end d=3.16
+  exit d=3.16
+  enter n=10
+    enter n=5
+      enter n=2
+      compare 10 - 11
+      best updated d=4.12
+      exit d=4.12
+      enter n=3
+      compare 12 - 13
+      best updated d=8.06
+      compare 12 - 14
+      compare 13 - 14
+      exit d=8.06
+    merge start (midx=12)
+    strip size=5
+    compare 11 - 13
+    best updated d=3.61
+    compare 15 - 12
+    merge end d=3.61
+    exit d=3.61
+    enter n=5
+      enter n=2
+      compare 15 - 16
+      best updated d=14.04
+      exit d=14.04
+      enter n=3
+      compare 17 - 18
+      best updated d=9.06
+      compare 17 - 19
+      best updated d=4.47
+      compare 18 - 19
+      exit d=4.47
+    merge start (midx=17)
+    strip size=4
+    compare 16 - 18
+    best updated d=2.83
+    merge end d=2.83
+    exit d=2.83
+  merge start (midx=15)
+  strip size=5
+  merge end d=2.83
+  exit d=2.83
+merge start (midx=10)
+strip size=5
+merge end d=2.83
+exit d=2.83
